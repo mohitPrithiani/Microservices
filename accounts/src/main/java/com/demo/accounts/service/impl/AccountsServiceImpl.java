@@ -1,10 +1,13 @@
 package com.demo.accounts.service.impl;
 
 import com.demo.accounts.constants.AccountsConstants;
+import com.demo.accounts.dto.AccountsDto;
 import com.demo.accounts.dto.CustomerDto;
 import com.demo.accounts.entity.Accounts;
 import com.demo.accounts.entity.Customer;
 import com.demo.accounts.exception.CustomerAlreadyExistsException;
+import com.demo.accounts.exception.ResourceNotFoundException;
+import com.demo.accounts.mapper.AccountsMapper;
 import com.demo.accounts.mapper.CustomerMapper;
 import com.demo.accounts.repository.AccountsRepository;
 import com.demo.accounts.repository.CustomerRepository;
@@ -47,6 +50,19 @@ public class AccountsServiceImpl implements IAccountsService {
         newAccount.setCreatedBy("Misc");
         newAccount.setCreatedAt(LocalDateTime.now());
         return newAccount;
+    }
+
+    @Override
+    public CustomerDto getCustomerDetails(String mobileNumber) {
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "Mobile Number", mobileNumber)
+        );
+        Accounts accountDetails = accountsRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
+                () -> new ResourceNotFoundException("Account", "Customer Id", customer.getCustomerId().toString())
+        );
+        CustomerDto customerDto = CustomerMapper.mapToCustomerDto(customer, new CustomerDto());
+        customerDto.setAccountsDto(AccountsMapper.mapToAccountsDto(new AccountsDto(), accountDetails));
+        return customerDto;
     }
 
 }

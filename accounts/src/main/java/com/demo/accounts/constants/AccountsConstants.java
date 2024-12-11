@@ -2,9 +2,7 @@ package com.demo.accounts.constants;
 
 public final class AccountsConstants {
 
-    private AccountsConstants() {
-        // restrict instantiation
-    }
+    private AccountsConstants() {}
 
     public static final String  SAVINGS = "Savings";
     public static final String  ADDRESS = "123 Main Street, New York";
